@@ -1,32 +1,22 @@
 FloatTable data;
-
 float dataMin, dataMax;
 int yearMin, yearMax;
 int[] years;
 float plotX1, plotY1;
 float plotX2, plotY2;
-
-
-// REFINE AND INTERACT VARIABLES
 int currentColumn = 0;
 int columnCount;
-
 PFont plotFont;
 int yearInterval = 10;
 int rowCount = 0;
-
-
 int volumeInterval = 10;
-
-
 float labelX, labelY;
 int toggleLine = 0;
-
 Integrator[] interpolators;
 
 void setup() {
   size(720,405);
-  data = new FloatTable("data/milk-tea-coffee.tsv");
+  data = new FloatTable("data/StockPrices.csv");
   columnCount = data.getColumnCount();
   years = int(data.getRowNames());
   yearMax = years[years.length-1];
@@ -46,7 +36,7 @@ void setup() {
   plotFont = createFont("SansSerif",20);
   textFont(plotFont);
    
-   interpolators = new Integrator[rowCount];
+   interpolators = new Integrator[rowCount]; //<>//
    for ( int row= 0 ; row < rowCount; row++ ) {
      float initialValue = data.getFloat(row,0); 
      interpolators[row] = new Integrator(initialValue);
@@ -101,7 +91,7 @@ void drawAxisLabels() {
   
   
   // The Y label
-  text("Gallons \n consumed \n per capita",labelX, (plotY1 + plotY2) / 2);
+  text("Stock \n close \n price",labelX, (plotY1 + plotY2) / 2);
   
 }
 
@@ -113,17 +103,14 @@ void drawXDataLabels() {
   stroke(224);
   strokeWeight(1);
 
-
   for (int row = 0; row < rowCount; row++) {
     if (years[row] % yearInterval == 0) {
       float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
       text(years[row], x, plotY2 + 10);
       line(x, plotY1, x, plotY2);
     }
-  }
-  
+  } 
 }
-
 
 void drawYDataLabels() {
    fill(0);
@@ -150,22 +137,16 @@ void drawYDataLabels() {
     } else {
       line(plotX1 -2, y, plotX1, y); 
       
-    }
-    
+    }    
   }
 }
 
-void drawYTickMarks() {
-  
-  
-  
+void drawYTickMarks() {  
 }
-
 
 float tabTop, tabBottom;
 float[] tabLeft, tabRight;
 float tabPad = 10;
-
 
 void drawTitleTabs() {
  

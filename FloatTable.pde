@@ -2,7 +2,6 @@
 // first column should be the row titles
 // all other values are expected to be floats
 // getFloat(0, 0) returns the first data value in the upper lefthand corner
-// files should be saved as "text, tab-delimited"
 // empty rows are ignored
 // extra whitespace is ignored
 
@@ -18,7 +17,7 @@ class FloatTable {
   FloatTable(String filename) {
     String[] rows = loadStrings(filename);
     
-    String[] columns = split(rows[0], TAB);
+    String[] columns = split(rows[0], ",");
     columnNames = subset(columns, 1); // upper-left corner ignored
     scrubQuotes(columnNames);
     columnCount = columnNames.length;
@@ -29,18 +28,18 @@ class FloatTable {
     // start reading at row 1, because the first row was only the column headers
     for (int i = 1; i < rows.length; i++) {
       if (trim(rows[i]).length() == 0) {
-        continue; // skip empty rows
+        continue; 
       }
       if (rows[i].startsWith("#")) {
-        continue;  // skip comment lines
+        continue;  
       }
 
-      // split the row on the tabs
-      String[] pieces = split(rows[i], TAB);
+      String[] pieces = split(rows[i], ",");
       scrubQuotes(pieces);
       
       // copy row title
       rowNames[rowCount] = pieces[0];
+      
       // copy data into the table starting at pieces[1]
       data[rowCount] = parseFloat(subset(pieces, 1));
 
