@@ -13,6 +13,7 @@ int volumeInterval = 10;
 float labelX, labelY;
 int toggleLine = 0;
 Integrator[] interpolators;
+int currentYear = 0;
 
 void setup() {
   size(720,405);
@@ -24,7 +25,7 @@ void setup() {
   dataMax = data.getTableMax();
   dataMin = 0;
   
-  // Create theboundaries for the visualization window
+  // Create the boundaries for the visualization window
   plotX1 = 120; 
   plotX2 = width - 80;
   plotY1 = 50;
@@ -33,10 +34,10 @@ void setup() {
   labelX =  50;
   rowCount = data.getRowCount();
   
-  plotFont = createFont("SansSerif",20);
+  plotFont = createFont("SansSerif",20); //<>//
   textFont(plotFont);
    
-   interpolators = new Integrator[rowCount]; //<>//
+   interpolators = new Integrator[rowCount];
    for ( int row= 0 ; row < rowCount; row++ ) {
      float initialValue = data.getFloat(row,0); 
      interpolators[row] = new Integrator(initialValue);
@@ -104,10 +105,11 @@ void drawXDataLabels() {
   strokeWeight(1);
 
   for (int row = 0; row < rowCount; row++) {
-    if (years[row] % yearInterval == 0) {
-      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+    if (years[row] != currentYear) {
+      float x = map(years[row], yearMin, yearMax, plotX1, plotX2); //<>//
       text(years[row], x, plotY2 + 10);
       line(x, plotY1, x, plotY2);
+      currentYear = years[row];
     }
   } 
 }
