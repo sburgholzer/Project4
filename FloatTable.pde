@@ -2,10 +2,11 @@
 // first column should be the row titles
 // all other values are expected to be floats
 // getFloat(0, 0) returns the first data value in the upper lefthand corner
-// files should be saved as "text, tab-delimited"
 // empty rows are ignored
 // extra whitespace is ignored
-
+//import java.util.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 class FloatTable {
   int rowCount;
@@ -13,34 +14,43 @@ class FloatTable {
   float[][] data;
   String[] rowNames;
   String[] columnNames;
-  
+  Date parsedDate;
+  String year;
   
   FloatTable(String filename) {
-    String[] rows = loadStrings(filename);
-    
-    String[] columns = split(rows[0], TAB);
+    String[] rows = loadStrings(filename);    
+    String[] columns = split(rows[0], ",");
     columnNames = subset(columns, 1); // upper-left corner ignored
     scrubQuotes(columnNames);
     columnCount = columnNames.length;
-
     rowNames = new String[rows.length-1];
     data = new float[rows.length-1][];
+   
 
     // start reading at row 1, because the first row was only the column headers
     for (int i = 1; i < rows.length; i++) {
       if (trim(rows[i]).length() == 0) {
-        continue; // skip empty rows
+        continue; 
       }
       if (rows[i].startsWith("#")) {
-        continue;  // skip comment lines
+        continue;  
       }
 
-      // split the row on the tabs
-      String[] pieces = split(rows[i], TAB);
+      String[] pieces = split(rows[i], ",");
       scrubQuotes(pieces);
+        
+      SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");       
+           
+      try {
+        parsedDate = formatter.parse(pieces[0]);       
+      } catch (Exception x) {
+        System.out.println("Unable to parse date, you should probably change your date format in column 1 to be: MM/dd/yyyy");
+      }     
       
-      // copy row title
-      rowNames[rowCount] = pieces[0];
+      SimpleDateFormat yearOnly = new SimpleDateFormat("yyyy");
+      year = yearOnly.format(parsedDate);
+      rowNames[rowCount] = year;
+      
       // copy data into the table starting at pieces[1]
       data[rowCount] = parseFloat(subset(pieces, 1));
 

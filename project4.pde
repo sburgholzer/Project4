@@ -1,32 +1,22 @@
 FloatTable data;
-
 float dataMin, dataMax;
 int yearMin, yearMax;
 int[] years;
 float plotX1, plotY1;
 float plotX2, plotY2;
-
-
-// REFINE AND INTERACT VARIABLES
 int currentColumn = 0;
 int columnCount;
-
 PFont plotFont;
-int yearInterval = 10;
 int rowCount = 0;
-
-
 int volumeInterval = 10;
-
-
 float labelX, labelY;
 int toggleLine = 0;
-
 Integrator[] interpolators;
+int currentYear = 0;
 
 void setup() {
   size(720,405);
-  data = new FloatTable("data/milk-tea-coffee.tsv");
+  data = new FloatTable("data/StockPrices.csv");
   columnCount = data.getColumnCount();
   years = int(data.getRowNames());
   yearMax = years[years.length-1];
@@ -34,7 +24,7 @@ void setup() {
   dataMax = data.getTableMax();
   dataMin = 0;
   
-  // Create theboundaries for the visualization window
+  // Create the boundaries for the visualization window
   plotX1 = 120; 
   plotX2 = width - 80;
   plotY1 = 50;
@@ -101,7 +91,7 @@ void drawAxisLabels() {
   
   
   // The Y label
-  text("Gallons \n consumed \n per capita",labelX, (plotY1 + plotY2) / 2);
+  text("Stock \n close \n price",labelX, (plotY1 + plotY2) / 2);
   
 }
 
@@ -113,17 +103,15 @@ void drawXDataLabels() {
   stroke(224);
   strokeWeight(1);
 
-
   for (int row = 0; row < rowCount; row++) {
-    if (years[row] % yearInterval == 0) {
+    if (years[row] != currentYear) {
       float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
       text(years[row], x, plotY2 + 10);
       line(x, plotY1, x, plotY2);
+      currentYear = years[row];
     }
-  }
-  
+  } 
 }
-
 
 void drawYDataLabels() {
    fill(0);
@@ -150,22 +138,16 @@ void drawYDataLabels() {
     } else {
       line(plotX1 -2, y, plotX1, y); 
       
-    }
-    
+    }    
   }
 }
 
-void drawYTickMarks() {
-  
-  
-  
+void drawYTickMarks() {  
 }
-
 
 float tabTop, tabBottom;
 float[] tabLeft, tabRight;
 float tabPad = 10;
-
 
 void drawTitleTabs() {
  
@@ -202,7 +184,6 @@ void mousePressed() {
    if (toggleLine == 0) toggleLine = 1;
   else toggleLine = 0;
 
-
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
       if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
@@ -212,55 +193,46 @@ void mousePressed() {
   }
 }
 
-void setColumn(int col) {
-    
-      if (col != currentColumn) {
-         currentColumn = col;
-       }
-       
-      for (int row = 0; row < rowCount; row++) {
-          interpolators[row].target(data.getFloat(row, col));
-       } 
-  
+void setColumn(int col) {  
+  if (col != currentColumn) {
+     currentColumn = col;
+   }
+   
+  for (int row = 0; row < rowCount; row++) {
+      interpolators[row].target(data.getFloat(row, col));
+   }   
 }
 
-
-void drawDataArea(int col) {
-  
-  
+void drawDataArea(int col) {  
   fill(#0000FF);
   beginShape();
   
-    for ( int row = 0; row < rowCount; row++ ) {
-      if (data.isValid(row,col) ) {
-          float value = interpolators[row].value;
-          float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
-          float y = map(value, dataMin, dataMax, plotY2, plotY1);
-          vertex(x,y);
-      }
+  for ( int row = 0; row < rowCount; row++ ) {
+    if (data.isValid(row,col) ) {
+        float value = interpolators[row].value;
+        float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+        float y = map(value, dataMin, dataMax, plotY2, plotY1);
+        vertex(x,y);
     }
+  }
     
-    // Draw the lower-right and lower-left corners.
+  // Draw the lower-right and lower-left corners.
   vertex(plotX2, plotY2);
   vertex(plotX1, plotY2);
   endShape(CLOSE);
-  
-  
 }
 
 float barWidth = 4;
 
 void drawDataBars(int col) {
-    noStroke( );
+  noStroke( ); //<>//
   rectMode(CORNERS);
   for (int row = 0; row < rowCount; row++) {
     if (data.isValid(row, col)) {
       float value = interpolators[row].value;
-     // float value = data.getFloat(row, col);
-      float x = map(years[row], yearMin, yearMax, plotX1, plotX2); 
+      float x = map(row, 0, rowCount - 1, plotX1, plotX2); 
       float y = map(value, dataMin, dataMax, plotY2, plotY1); 
       rect(x-barWidth/2, y, x+barWidth/2, plotY2);
     }
   }
-  
 }
