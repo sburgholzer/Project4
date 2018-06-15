@@ -42,7 +42,7 @@ class FloatTable {
       SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");       
            
       try {
-        parsedDate = formatter.parse(pieces[0]);        //<>//
+        parsedDate = formatter.parse(pieces[0]);       
       } catch (Exception x) {
         System.out.println("Unable to parse date, you should probably change your date format in column 1 to be: MM/dd/yyyy");
       }     

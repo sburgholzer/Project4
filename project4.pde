@@ -7,7 +7,6 @@ float plotX2, plotY2;
 int currentColumn = 0;
 int columnCount;
 PFont plotFont;
-int yearInterval = 10;
 int rowCount = 0;
 int volumeInterval = 10;
 float labelX, labelY;
@@ -34,7 +33,7 @@ void setup() {
   labelX =  50;
   rowCount = data.getRowCount();
   
-  plotFont = createFont("SansSerif",20); //<>//
+  plotFont = createFont("SansSerif",20);
   textFont(plotFont);
    
    interpolators = new Integrator[rowCount];
@@ -106,7 +105,7 @@ void drawXDataLabels() {
 
   for (int row = 0; row < rowCount; row++) {
     if (years[row] != currentYear) {
-      float x = map(years[row], yearMin, yearMax, plotX1, plotX2); //<>//
+      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
       text(years[row], x, plotY2 + 10);
       line(x, plotY1, x, plotY2);
       currentYear = years[row];
@@ -185,7 +184,6 @@ void mousePressed() {
    if (toggleLine == 0) toggleLine = 1;
   else toggleLine = 0;
 
-
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
       if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
@@ -195,55 +193,46 @@ void mousePressed() {
   }
 }
 
-void setColumn(int col) {
-    
-      if (col != currentColumn) {
-         currentColumn = col;
-       }
-       
-      for (int row = 0; row < rowCount; row++) {
-          interpolators[row].target(data.getFloat(row, col));
-       } 
-  
+void setColumn(int col) {  
+  if (col != currentColumn) {
+     currentColumn = col;
+   }
+   
+  for (int row = 0; row < rowCount; row++) {
+      interpolators[row].target(data.getFloat(row, col));
+   }   
 }
 
-
-void drawDataArea(int col) {
-  
-  
+void drawDataArea(int col) {  
   fill(#0000FF);
   beginShape();
   
-    for ( int row = 0; row < rowCount; row++ ) {
-      if (data.isValid(row,col) ) {
-          float value = interpolators[row].value;
-          float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
-          float y = map(value, dataMin, dataMax, plotY2, plotY1);
-          vertex(x,y);
-      }
+  for ( int row = 0; row < rowCount; row++ ) {
+    if (data.isValid(row,col) ) {
+        float value = interpolators[row].value;
+        float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+        float y = map(value, dataMin, dataMax, plotY2, plotY1);
+        vertex(x,y);
     }
+  }
     
-    // Draw the lower-right and lower-left corners.
+  // Draw the lower-right and lower-left corners.
   vertex(plotX2, plotY2);
   vertex(plotX1, plotY2);
   endShape(CLOSE);
-  
-  
 }
 
 float barWidth = 4;
 
 void drawDataBars(int col) {
-    noStroke( );
+  noStroke( ); //<>//
   rectMode(CORNERS);
   for (int row = 0; row < rowCount; row++) {
     if (data.isValid(row, col)) {
       float value = interpolators[row].value;
-     // float value = data.getFloat(row, col);
-      float x = map(years[row], yearMin, yearMax, plotX1, plotX2); 
+      float x = map(row, 0, rowCount - 1, plotX1, plotX2); 
       float y = map(value, dataMin, dataMax, plotY2, plotY1); 
       rect(x-barWidth/2, y, x+barWidth/2, plotY2);
     }
   }
-  
 }
