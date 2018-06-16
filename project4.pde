@@ -8,7 +8,7 @@ int currentColumn = 0;
 int columnCount;
 PFont plotFont;
 int rowCount = 0;
-int volumeInterval = 10;
+int volumeInterval = 250;
 float labelX, labelY;
 int toggleLine = 0;
 Integrator[] interpolators;
@@ -45,16 +45,14 @@ void setup() {
    smooth();
 }
 
-void draw() {
-  
+void draw() {  
    background(224); // Offwhite background
    
    // Draw the visualization window 
    fill(255);
    rectMode(CORNERS);
    rect(plotX1,plotY1,plotX2,plotY2);
-   
-   
+    
    // fill(#5679C1);
     
    drawTitle(); 
@@ -66,40 +64,34 @@ void draw() {
    drawDataBars(currentColumn);
    
    for (int row = 0; row < rowCount; row++) { 
-    interpolators[row].update( );
+     interpolators[row].update( );
   }
-  
-  
 }
 
 void drawTitle() {
-   fill(0);
+  fill(0);
   textSize(20);
   textAlign(LEFT);
   String title = data.getColumnName(currentColumn);
   text(title, plotX1, plotY1 - 10);
 }
 
-void drawAxisLabels() {
-  
+void drawAxisLabels() { 
   textSize(13);
   textLeading(15);
   textAlign(CENTER,CENTER);
   
   // The X label
   text("Year", (plotX1 + plotX2) / 2, labelY);
-  
-  
   // The Y label
-  text("Stock \n close \n price",labelX, (plotY1 + plotY2) / 2);
-  
+  text("Stock \n close \n price",labelX, (plotY1 + plotY2) / 2);  
 }
 
 void drawXDataLabels() {
   textSize(10);
   textAlign(CENTER,TOP);
   
-    // Use thin, gray lines to draw the grid.
+  // Use thin, gray lines to draw the grid.
   stroke(224);
   strokeWeight(1);
 
@@ -114,35 +106,22 @@ void drawXDataLabels() {
 }
 
 void drawYDataLabels() {
-   fill(0);
+  fill(0);
   textSize(10);
-
-  stroke(128);
+  stroke(224);
   strokeWeight(1);
+  
   for (float v = dataMin; v <= dataMax; v += volumeInterval) {
     float y = map(v, dataMin, dataMax, plotY2, plotY1);
     if (v % volumeInterval == 0) {
-      if (v == dataMin) {
-        textAlign(RIGHT); // Align by the bottom
-      
-      } else if (v == dataMax) {
-        textAlign(RIGHT, TOP); // Align by the top
-      } else {
-        textAlign(RIGHT, CENTER); // Center vertically
-      }
-      text(floor(v), plotX1 - 10, y);
-    
-     // strokeWeight(2);
-      line(plotX1 -4, y, plotX1, y); // Draw major tick mark
-    
-    } else {
-      line(plotX1 -2, y, plotX1, y); 
-      
-    }    
+     
+      textAlign(RIGHT, CENTER); // Center vertically
+      text("$" + floor(v), plotX1 - 10, y);
+   
+      strokeWeight(1);
+      line(plotX1 -4, y, plotX2, y); // Draw major tick mark   
+    } 
   }
-}
-
-void drawYTickMarks() {  
 }
 
 float tabTop, tabBottom;
@@ -150,7 +129,6 @@ float[] tabLeft, tabRight;
 float tabPad = 10;
 
 void drawTitleTabs() {
- 
   rectMode(CORNERS); 
   noStroke( ); 
   textSize(20); 
