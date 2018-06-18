@@ -103,6 +103,7 @@ void draw() {
    drawYDataLabels();
    drawTitleTabs();
    drawDataArea(currentColumn);
+   rollover(currentColumn);
    //drawDataBars(currentColumn);
    
    for (int row = 0; row < rowCount; row++) { 
@@ -271,6 +272,24 @@ void drawDataBars(int col) {
       float x = map(row, 0, rowCount - 1, plotX1, plotX2); 
       float y = map(value, dataMin, dataMax, plotY2, plotY1); 
       rect(x-barWidth/2, y, x+barWidth/2, plotY2);
+    }
+  }
+}
+
+void rollover(int col){
+   for(int i = 0; i < xNumber.length; i ++){
+    if(data.isValid(i,col)){
+      float value = interpolators[i].value;
+      float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
+      float y = map(value, dataMin, dataMax, plotY2, plotY1);
+      if(dist(mouseX, mouseY, x, y) < 3){
+        strokeWeight(10);
+        point(x,y);
+        fill(0);
+        textSize(10);
+        textAlign(CENTER);
+        text(nf(value, 0, 2) + " (" + data.getMonth(i) + "/1)", x, y-8);
+      }
     }
   }
 }
