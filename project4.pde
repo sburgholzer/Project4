@@ -13,6 +13,8 @@ float labelX, labelY;
 int toggleLine = 0;
 Integrator[] interpolators;
 int currentYear = 0;
+int[] numOfEachYear;
+int[] xNumber;
 
 void setup() {
   size(720,405);
@@ -23,6 +25,44 @@ void setup() {
   yearMin = years[0];
   dataMax = data.getTableMax();
   dataMin = 0;
+  
+  // This will determine how many data points for each year this are
+  // This is to make the graph more realistic
+  numOfEachYear = new int[years.length-1];
+  int prevYear = years[0];
+  int count = 0;
+  int newIndex = 0;
+  for(int index = 0; index < years.length; index++){
+    if(prevYear == years[years.length - 1]){
+      count += 1;
+    } else {
+      if(years[index] == prevYear){
+        count += 1;
+      } else {
+        numOfEachYear[newIndex] = count;
+        newIndex += 1;
+        count = 1;
+        prevYear = years[index];
+      }
+    }
+    
+  }
+  numOfEachYear[newIndex + 1] = count;
+  
+  // This will tell us how many X axis points we will have
+  int totalPoints = 0;
+  for(int index = 0; index < numOfEachYear.length; index++){
+    if(numOfEachYear[index] != 0){
+      totalPoints = totalPoints + numOfEachYear[index];
+    }
+  }
+  // This just creates an array of values 0 to the total number of points
+  // This is so we can display all the points at the appropriate location
+  xNumber = new int[totalPoints];
+  for(int i = 0; i < totalPoints; i++){
+    xNumber[i] = i;
+  }
+  
   
   // Create the boundaries for the visualization window
   plotX1 = 120; 
@@ -43,6 +83,8 @@ void setup() {
      interpolators[row].attraction = 0.5; 
    }
    smooth();
+   
+   
 }
 
 void draw() {  
@@ -60,8 +102,8 @@ void draw() {
    drawXDataLabels();
    drawYDataLabels();
    drawTitleTabs();
-  //  drawDataArea(currentColumn);
-   drawDataBars(currentColumn);
+   drawDataArea(currentColumn);
+   //drawDataBars(currentColumn);
    
    for (int row = 0; row < rowCount; row++) { 
      interpolators[row].update( );
@@ -94,7 +136,16 @@ void drawXDataLabels() {
   // Use thin, gray lines to draw the grid.
   stroke(224);
   strokeWeight(1);
-
+  for(int i = 0; i < xNumber.length; i++){
+    if (years[i] != currentYear){
+      float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
+      text(years[i], x, plotY2 + 10);
+      line(x, plotY1, x, plotY2);
+      currentYear = years[i];
+    }
+    
+  }
+  /*
   for (int row = 0; row < rowCount; row++) {
     if (years[row] != currentYear) {
       float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
@@ -102,7 +153,7 @@ void drawXDataLabels() {
       line(x, plotY1, x, plotY2);
       currentYear = years[row];
     }
-  } 
+  } */
 }
 
 void drawYDataLabels() {
@@ -185,14 +236,23 @@ void drawDataArea(int col) {
   fill(#0000FF);
   beginShape();
   
+  for(int i = 0; i < xNumber.length; i ++){
+    if(data.isValid(i,col)){
+      float value = interpolators[i].value;
+      float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
+      float y = map(value, dataMin, dataMax, plotY2, plotY1);
+      vertex(x,y);
+    }
+  }
+  /*
   for ( int row = 0; row < rowCount; row++ ) {
     if (data.isValid(row,col) ) {
         float value = interpolators[row].value;
         float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
         float y = map(value, dataMin, dataMax, plotY2, plotY1);
         vertex(x,y);
-    }
-  }
+    }*/
+  //}
     
   // Draw the lower-right and lower-left corners.
   vertex(plotX2, plotY2);
