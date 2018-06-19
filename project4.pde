@@ -6,7 +6,7 @@
 //# Class:    CPSC 53000 Data Visualization #
 //# Semester: Summer I 2018                 #
 //# Project:  4                             #
-//# Date:     06/119/18                     #
+//# Date:     06/19/18                     #
 //###########################################
 
 //############ Global Variables #############
@@ -57,10 +57,10 @@ void setup() {
   int count = 0;
   int newIndex = 0;
   for(int index = 0; index < years.length; index++){
-    if(prevYear == years[years.length - 1]){
+    if (prevYear == years[years.length - 1]) {
       count += 1;
     } else {
-      if(years[index] == prevYear){
+      if (years[index] == prevYear) {
         count += 1;
       } else {
         numOfEachYear[newIndex] = count;
@@ -69,21 +69,20 @@ void setup() {
         prevYear = years[index];
       }
     }
-    
   }
   numOfEachYear[newIndex + 1] = count;
   
   // This will tell us how many X axis points we will have
   int totalPoints = 0;
-  for(int index = 0; index < numOfEachYear.length; index++){
-    if(numOfEachYear[index] != 0){
+  for (int index = 0; index < numOfEachYear.length; index++) {
+    if (numOfEachYear[index] != 0) {
       totalPoints = totalPoints + numOfEachYear[index];
     }
   }
   // This just creates an array of values 0 to the total number of points
   // This is so we can display all the points at the appropriate location
   xNumber = new int[totalPoints];
-  for(int i = 0; i < totalPoints; i++){
+  for (int i = 0; i < totalPoints; i++) {
     xNumber[i] = i;
   }
   
@@ -118,29 +117,29 @@ void setup() {
 void draw() {  
   background(224); // Offwhite background
    
-   // Draw the visualization window 
+  // Draw the visualization window 
 
-   fill(255);
-   rectMode(CORNERS);
-   rect(plotX1,plotY1,plotX2,plotY2);
+  fill(255);
+  rectMode(CORNERS);
+  rect(plotX1,plotY1,plotX2,plotY2);
    
-   // this is for the zoom cababilities
-   translate(xTrans,yTrans);
-   scale(zoom);
+  // this is for the zoom cababilities
+  translate(xTrans,yTrans);
+  scale(zoom);
    
-   // functions to draw everything
-   drawTitle(); 
-   drawAxisLabels();
-   drawTitleTabs();
-   drawDataArea(currentColumn);
-   fill(0);
-   drawXDataLabels();
-   drawYDataLabels();
-   rollover(currentColumn);
-   //drawDataBars(currentColumn);
+  // functions to draw everything
+  drawTitle(); 
+  drawAxisLabels();
+  drawTitleTabs();
+  drawDataArea(currentColumn);
+  fill(0);
+  drawXDataLabels();
+  drawYDataLabels();
+  rollover(currentColumn);
+  //drawDataBars(currentColumn);
    
-   // update the data
-   for (int row = 0; row < rowCount; row++) { 
+  // update the data
+  for (int row = 0; row < rowCount; row++) { 
      interpolators[row].update( );
   }
 }
@@ -171,7 +170,7 @@ void drawXDataLabels() {
   // Use thin, gray lines to draw the grid.
   stroke(224);
   strokeWeight(1);
-  for(int i = 0; i < xNumber.length; i++){
+  for (int i = 0; i < xNumber.length; i++) {
     if (years[i] != currentYear){
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       text(years[i], x, plotY2 + 10);
@@ -181,7 +180,6 @@ void drawXDataLabels() {
       }
       currentYear = years[i];
     }
-    
   }
 }
 
@@ -199,19 +197,18 @@ void drawYDataLabels() {
       strokeWeight(1);
       // only display the grid lines when the user tells us to
       if (toggleLine == 1) {
-          line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
+        line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
       }
-       
     } 
   }
 }
 
 float tabTop, tabBottom;
 float[] tabLeft, tabRight;
-float tabPad = 10; //<>//
+float tabPad = 10;
 
 void drawTitleTabs() {
-  rectMode(CORNERS); 
+  rectMode(CORNERS);  //<>//
   noStroke( ); 
   textSize(20); 
   textAlign(LEFT);
@@ -258,9 +255,12 @@ void mousePressed() {
 
 // we decided to toggle grid lines by pressing the space bar
 void keyPressed(){
-  if (key == ' '){
-    if (toggleLine == 0) toggleLine = 1;
-    else toggleLine = 0;
+  if (key == ' ') {
+    if (toggleLine == 0) {
+      toggleLine = 1;
+    } else {
+      toggleLine = 0;
+    }
   }
 }
 
@@ -281,8 +281,8 @@ void drawDataArea(int col) {
   beginShape();
   
 
-  for(int i = 0; i < xNumber.length; i ++){
-    if(data.isValid(i,col)){
+  for (int i = 0; i < xNumber.length; i ++) {
+    if (data.isValid(i,col)){
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
@@ -315,12 +315,12 @@ void drawDataBars(int col) {
 
 // display the data in rollover (doesn't work as nicely when zoomed in)
 void rollover(int col){
-   for(int i = 0; i < xNumber.length; i ++){
-    if(data.isValid(i,col)){
+   for (int i = 0; i < xNumber.length; i ++) {
+    if (data.isValid(i,col)) {
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
-      if(dist(mouseX, mouseY, x, y) < 2){
+      if (dist(mouseX, mouseY, x, y) < 2) {
         strokeWeight(10);
         point(x,y);
         fill(0);
@@ -334,9 +334,7 @@ void rollover(int col){
 
 // get the zoom data
 void mouseWheel( MouseEvent event) {
-  
   xTrans = xTrans-event.getCount()*(mouseX)/100;
-  
   yTrans = yTrans-event.getCount()*(mouseY)/100;
   zoom += event.getAmount() / 100;
 }
