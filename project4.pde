@@ -336,7 +336,7 @@ void rollover(int col) {
         fill(0);
         textSize(10);
         textAlign(CENTER);
-        text( "$" + nf(value, 0, 2) + " (" + data.getMonth(i) + "/" + data.getYear(i) + ")", x, y-8);
+        text(String.format("$%s (%s/%s)", nf(value, 0, 2), data.getMonth(i), data.getYear(i)), x, y - 8);
       }
     }
   }
