@@ -15,6 +15,9 @@ Integrator[] interpolators;
 int currentYear = 0;
 int[] numOfEachYear;
 int[] xNumber;
+float xTrans = 0;
+float yTrans = 0;
+float zoom = 1;
 
 void setup() {
   size(720,405);
@@ -95,6 +98,9 @@ void draw() {
    rectMode(CORNERS);
    rect(plotX1,plotY1,plotX2,plotY2);
     
+   translate(xTrans,yTrans);
+   scale(zoom);
+   
    // fill(#5679C1);
     
    drawTitle(); 
@@ -219,8 +225,10 @@ void drawTitleTabs() {
 }
 
 void mousePressed() {
-   
-
+  xTrans = 0;
+  yTrans = 0;
+  zoom = 1;
+  
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
       if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
@@ -296,14 +304,24 @@ void rollover(int col){
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
-      if(dist(mouseX, mouseY, x, y) < 3){
+      if(dist(mouseX, mouseY, x, y) < 2){
         strokeWeight(10);
         point(x,y);
         fill(0);
         textSize(10);
         textAlign(CENTER);
-        text(nf(value, 0, 2) + " (" + data.getMonth(i) + "/1)", x, y-8);
+        text( "$" + nf(value, 0, 2) + " (" + data.getMonth(i) + "/1)", x, y-8);
       }
     }
   }
+}
+
+void mouseWheel( MouseEvent event) {
+  
+  xTrans = xTrans-event.getCount()*(mouseX)/100;
+  
+  yTrans = yTrans-event.getCount()*(mouseY)/100;
+  zoom += event.getAmount() / 100;
+  
+  
 }
