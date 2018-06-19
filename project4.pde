@@ -2,7 +2,7 @@
 //# Authors:   Thomas Swed                  #
 //#            Brandon Schabell             #
 //#            Patrick Tran                 #
-//#            Scott Burgholzer
+//#            Scott Burgholzer             #
 //# Class:    CPSC 53000 Data Visualization #
 //# Semester: Summer I 2018                 #
 //# Project:  4                             #
