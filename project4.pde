@@ -1,26 +1,47 @@
+//###########################################
+//# Authors:   Thomas Swed                  #
+//#            Brandon Schabell             #
+//#            Patrick Tran                 #
+//#            Scott Burgholzer
+//# Class:    CPSC 53000 Data Visualization #
+//# Semester: Summer I 2018                 #
+//# Project:  4                             #
+//# Date:     06/119/18                     #
+//###########################################
+
+//############ Global Variables #############
+// vars for data
 FloatTable data;
 float dataMin, dataMax;
 int yearMin, yearMax;
 int[] years;
-float plotX1, plotY1;
-float plotX2, plotY2;
 int currentColumn = 0;
 int columnCount;
-PFont plotFont;
 int rowCount = 0;
 int volumeInterval = 250;
-float labelX, labelY;
-int toggleLine = 0;
 Integrator[] interpolators;
 int currentYear = 0;
 int[] numOfEachYear;
 int[] xNumber;
+
+// vars for plotting
+float plotX1, plotY1;
+float plotX2, plotY2;
+PFont plotFont;
+float labelX, labelY;
+int toggleLine = 0;
+
+// vars for zooming
 float xTrans = 0;
 float yTrans = 0;
 float zoom = 1;
 
+//################ Functions ################
+
 void setup() {
   size(720,405);
+  
+  // get the data
   data = new FloatTable("data/StockPrices.csv");
   columnCount = data.getColumnCount();
   years = int(data.getRowNames());
@@ -76,9 +97,11 @@ void setup() {
   labelX =  50;
   rowCount = data.getRowCount();
   
+  // create the font
   plotFont = createFont("SansSerif",20);
   textFont(plotFont);
    
+   // initial data loaded
    interpolators = new Integrator[rowCount];
    for ( int row= 0 ; row < rowCount; row++ ) {
      float initialValue = data.getFloat(row,0); 
@@ -97,15 +120,14 @@ void draw() {
    fill(255);
    rectMode(CORNERS);
    rect(plotX1,plotY1,plotX2,plotY2);
-    
+   
+   // this is for the zoom cababilities
    translate(xTrans,yTrans);
    scale(zoom);
    
-   // fill(#5679C1);
-    
+   // functions to draw everything
    drawTitle(); 
    drawAxisLabels();
-   
    drawTitleTabs();
    drawDataArea(currentColumn);
    fill(0);
@@ -114,6 +136,7 @@ void draw() {
    rollover(currentColumn);
    //drawDataBars(currentColumn);
    
+   // update the data
    for (int row = 0; row < rowCount; row++) { 
      interpolators[row].update( );
   }
@@ -149,7 +172,7 @@ void drawXDataLabels() {
     if (years[i] != currentYear){
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       text(years[i], x, plotY2 + 10);
-      //line(x, plotY1, x, plotY2);
+      // only display gridlines when user tells us to
       if (toggleLine == 1) {
           line(x, plotY1, x, plotY2);
       }
@@ -157,15 +180,6 @@ void drawXDataLabels() {
     }
     
   }
-  /*
-  for (int row = 0; row < rowCount; row++) {
-    if (years[row] != currentYear) {
-      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
-      text(years[row], x, plotY2 + 10);
-      line(x, plotY1, x, plotY2);
-      currentYear = years[row];
-    }
-  } */
 }
 
 void drawYDataLabels() {
@@ -177,11 +191,10 @@ void drawYDataLabels() {
   for (float v = dataMin; v <= dataMax; v += volumeInterval) {
     float y = map(v, dataMin, dataMax, plotY2, plotY1);
     if (v % volumeInterval == 0) {
-     
       textAlign(RIGHT, CENTER); // Center vertically
       text("$" + floor(v), plotX1 - 10, y);
-   
       strokeWeight(1);
+      // only display the grid lines when the user tells us to
       if (toggleLine == 1) {
           line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
       }
@@ -225,10 +238,12 @@ void drawTitleTabs() {
 }
 
 void mousePressed() {
+  // zoom back to nromal
   xTrans = 0;
   yTrans = 0;
   zoom = 1;
   
+  // select the graph
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
       if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
@@ -238,6 +253,7 @@ void mousePressed() {
   }
 }
 
+// we decided to toggle grid lines by pressing the space bar
 void keyPressed(){
   if (key == ' '){
     if (toggleLine == 0) toggleLine = 1;
@@ -255,6 +271,8 @@ void setColumn(int col) {
    }   
 }
 
+// stock data is drawn with the area filled in
+// so we use this method
 void drawDataArea(int col) {  
   fill(#0000FF);
   beginShape();
@@ -267,15 +285,6 @@ void drawDataArea(int col) {
       vertex(x,y);
     }
   }
-  /*
-  for ( int row = 0; row < rowCount; row++ ) {
-    if (data.isValid(row,col) ) {
-        float value = interpolators[row].value;
-        float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
-        float y = map(value, dataMin, dataMax, plotY2, plotY1);
-        vertex(x,y);
-    }*/
-  //}
     
   // Draw the lower-right and lower-left corners.
   vertex(plotX2, plotY2);
@@ -283,6 +292,7 @@ void drawDataArea(int col) {
   endShape(CLOSE);
 }
 
+/*
 float barWidth = 4;
 
 void drawDataBars(int col) {
@@ -297,7 +307,9 @@ void drawDataBars(int col) {
     }
   }
 }
+*/
 
+// display the data in rollover (doesn't work as nicely when zoomed in)
 void rollover(int col){
    for(int i = 0; i < xNumber.length; i ++){
     if(data.isValid(i,col)){
@@ -316,6 +328,7 @@ void rollover(int col){
   }
 }
 
+// get the zoom data
 void mouseWheel( MouseEvent event) {
   
   xTrans = xTrans-event.getCount()*(mouseX)/100;
