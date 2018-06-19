@@ -99,10 +99,12 @@ void draw() {
     
    drawTitle(); 
    drawAxisLabels();
-   drawXDataLabels();
-   drawYDataLabels();
+   
    drawTitleTabs();
    drawDataArea(currentColumn);
+   fill(0);
+   drawXDataLabels();
+   drawYDataLabels();
    rollover(currentColumn);
    //drawDataBars(currentColumn);
    
@@ -141,7 +143,10 @@ void drawXDataLabels() {
     if (years[i] != currentYear){
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       text(years[i], x, plotY2 + 10);
-      line(x, plotY1, x, plotY2);
+      //line(x, plotY1, x, plotY2);
+      if (toggleLine == 1) {
+          line(x, plotY1, x, plotY2);
+      }
       currentYear = years[i];
     }
     
@@ -171,7 +176,10 @@ void drawYDataLabels() {
       text("$" + floor(v), plotX1 - 10, y);
    
       strokeWeight(1);
-      line(plotX1 -4, y, plotX2, y); // Draw major tick mark   
+      if (toggleLine == 1) {
+          line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
+      }
+       
     } 
   }
 }
@@ -211,8 +219,7 @@ void drawTitleTabs() {
 }
 
 void mousePressed() {
-   if (toggleLine == 0) toggleLine = 1;
-  else toggleLine = 0;
+   
 
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
@@ -220,6 +227,13 @@ void mousePressed() {
         setColumn(col);
       }
     }
+  }
+}
+
+void keyPressed(){
+  if (key == ' '){
+    if (toggleLine == 0) toggleLine = 1;
+    else toggleLine = 0;
   }
 }
 
