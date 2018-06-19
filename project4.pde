@@ -128,7 +128,8 @@ void draw() {
   scale(zoom);
    
   // functions to draw everything
-  drawTitle(); 
+  drawTitle();
+  drawGridlineBlurb();
   drawAxisLabels();
   drawTitleTabs();
   drawDataArea(currentColumn);
@@ -152,7 +153,15 @@ void drawTitle() {
   text(title, plotX1 + 10, plotY1 + 25);
 }
 
-void drawAxisLabels() { 
+void drawGridlineBlurb() {
+  fill(150);
+  textSize(12);
+  textAlign(LEFT);
+  text("Grid can be toggled on/off by pressing the space bar.", plotX1 + 10, plotY1 + 50);
+}
+
+void drawAxisLabels() {
+  fill(0);
   textSize(13);
   textLeading(15);
   textAlign(CENTER,CENTER);
@@ -199,7 +208,7 @@ void drawYDataLabels() {
       if (toggleLine == 1) {
         line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
       }
-    } 
+    }  //<>//
   }
 }
 
@@ -291,7 +300,7 @@ void drawDataArea(int col) {
   }
     
   // Draw the lower-right and lower-left corners.
-  vertex(plotX2, plotY2);
+  vertex(plotX2, plotY2); //<>//
   vertex(plotX1, plotY2);
   endShape(CLOSE);
 }
@@ -314,19 +323,20 @@ void drawDataBars(int col) {
 */
 
 // display the data in rollover (doesn't work as nicely when zoomed in)
-void rollover(int col){
-   for (int i = 0; i < xNumber.length; i ++) {
+void rollover(int col) {
+  for (int i = 0; i < xNumber.length; i ++) {
     if (data.isValid(i,col)) {
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
-      if (dist(mouseX, mouseY, x, y) < 2) {
+      // if (dist(mouseX, mouseY, x, y) < 2) {
+      if (abs(mouseX - x) < 3) {
         strokeWeight(10);
         point(x,y);
         fill(0);
         textSize(10);
         textAlign(CENTER);
-        text( "$" + nf(value, 0, 2) + " (" + data.getMonth(i) + "/1)", x, y-8);
+        text( "$" + nf(value, 0, 2) + " (" + data.getMonth(i) + "/" + data.getYear(i) + ")", x, y-8);
       }
     }
   }

@@ -18,6 +18,7 @@ class FloatTable {
   String year;
   String month;
   String[] months;
+  String[] years;
   
   FloatTable(String filename) {
     String[] rows = loadStrings(filename);    
@@ -27,6 +28,7 @@ class FloatTable {
     columnCount = columnNames.length;
     rowNames = new String[rows.length-1];
     months = new String[rows.length-1];
+    years = new String[rows.length-1];
     data = new float[rows.length-1][];
    
 
@@ -56,6 +58,7 @@ class FloatTable {
       SimpleDateFormat monthOnly = new SimpleDateFormat("MM");
       month = monthOnly.format(parsedDate);
       months[rowCount] = month;
+      years[rowCount] = year;
       
       // copy data into the table starting at pieces[1]
       data[rowCount] = parseFloat(subset(pieces, 1));
@@ -123,8 +126,12 @@ class FloatTable {
     return columnNames[colIndex];
   }
   
-  String getMonth(int row){
+  String getMonth(int row ){
     return months[row];
+  }
+  
+  String getYear(int row) {
+    return years[row];
   }
   
   String[] getColumnNames() {
