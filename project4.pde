@@ -36,35 +36,38 @@ void setup() {
   plotFont = createFont("SansSerif",20);
   textFont(plotFont);
    
-   interpolators = new Integrator[rowCount];
-   for ( int row= 0 ; row < rowCount; row++ ) {
-     float initialValue = data.getFloat(row,0); 
-     interpolators[row] = new Integrator(initialValue);
-     interpolators[row].attraction = 0.5; 
-   }
-   smooth();
+  interpolators = new Integrator[rowCount];
+  for (int row= 0 ; row < rowCount; row++) {
+    float initialValue = data.getFloat(row, 0); 
+    interpolators[row] = new Integrator(initialValue);
+    interpolators[row].attraction = 0.5; 
+  }
+  smooth();
+   
+  frameRate(24); // Slowing the frame rate for a more aesthetically pleasing transition
+  surface.setTitle("Stock Prices"); // Setting window title
 }
 
 void draw() {  
-   background(224); // Offwhite background
+  background(224); // Offwhite background
    
    // Draw the visualization window 
-   fill(255);
-   rectMode(CORNERS);
-   rect(plotX1,plotY1,plotX2,plotY2);
+  fill(255);
+  rectMode(CORNERS);
+  rect(plotX1,plotY1,plotX2,plotY2);
     
    // fill(#5679C1);
     
-   drawTitle(); 
-   drawAxisLabels();
-   drawXDataLabels();
-   drawYDataLabels();
-   drawTitleTabs();
-  //  drawDataArea(currentColumn);
-   drawDataBars(currentColumn);
+  drawTitle(); 
+  drawAxisLabels();
+  drawXDataLabels();
+  drawYDataLabels();
+  drawTitleTabs();
+  // drawDataArea(currentColumn);
+  drawDataBars(currentColumn);
    
-   for (int row = 0; row < rowCount; row++) { 
-     interpolators[row].update( );
+  for (int row = 0; row < rowCount; row++) { 
+    interpolators[row].update();
   }
 }
 
@@ -73,7 +76,7 @@ void drawTitle() {
   textSize(20);
   textAlign(LEFT);
   String title = data.getColumnName(currentColumn);
-  text(title, plotX1, plotY1 - 10);
+  text(title, plotX1 + 10, plotY1 + 25);
 }
 
 void drawAxisLabels() { 
@@ -114,7 +117,6 @@ void drawYDataLabels() {
   for (float v = dataMin; v <= dataMax; v += volumeInterval) {
     float y = map(v, dataMin, dataMax, plotY2, plotY1);
     if (v % volumeInterval == 0) {
-     
       textAlign(RIGHT, CENTER); // Center vertically
       text("$" + floor(v), plotX1 - 10, y);
    
@@ -159,8 +161,11 @@ void drawTitleTabs() {
 }
 
 void mousePressed() {
-   if (toggleLine == 0) toggleLine = 1;
-  else toggleLine = 0;
+  if (toggleLine == 0) {
+    toggleLine = 1;
+  } else {
+    toggleLine = 0;
+  }
 
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
@@ -173,12 +178,12 @@ void mousePressed() {
 
 void setColumn(int col) {  
   if (col != currentColumn) {
-     currentColumn = col;
-   }
+    currentColumn = col;
+  }
    
   for (int row = 0; row < rowCount; row++) {
-      interpolators[row].target(data.getFloat(row, col));
-   }   
+    interpolators[row].target(data.getFloat(row, col));
+  }   
 }
 
 void drawDataArea(int col) {  
@@ -187,10 +192,10 @@ void drawDataArea(int col) {
   
   for ( int row = 0; row < rowCount; row++ ) {
     if (data.isValid(row,col) ) {
-        float value = interpolators[row].value;
-        float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
-        float y = map(value, dataMin, dataMax, plotY2, plotY1);
-        vertex(x,y);
+      float value = interpolators[row].value;
+      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+      float y = map(value, dataMin, dataMax, plotY2, plotY1);
+      vertex(x,y);
     }
   }
     
