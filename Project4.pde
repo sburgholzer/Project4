@@ -131,15 +131,15 @@ void draw() {
   rect(plotX1,plotY1,plotX2,plotY2);
    
   // functions to draw everything
-  drawTitle();
-  drawGridlineBlurb();
-  drawZoomResetBlurb();
   drawAxisLabels();
-  
   drawDataArea(currentColumn);
   fill(0);
   drawXDataLabels();
   drawYDataLabels();
+  drawTitle();
+  drawGridlineBlurb();
+  drawZoomResetBlurb();
+  drawDragBlurb();
   rollover(currentColumn);
    
   // update the data
@@ -168,6 +168,13 @@ void drawZoomResetBlurb() {
   textSize(12);
   textAlign(LEFT);
   text("- Position and zoom can be reset by pressing the 'z' key.", plotX1 + 10, plotY1 + 60);
+}
+
+void drawDragBlurb() {
+  fill(150);
+  textSize(12);
+  textAlign(LEFT);
+  text("- Drag to scroll.", plotX1 + 10, plotY1 + 78);
 }
 
 void drawAxisLabels() {
