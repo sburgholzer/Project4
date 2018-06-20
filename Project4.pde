@@ -206,7 +206,7 @@ void drawXDataLabels() {
 
 void drawYDataLabels() {
   fill(0);
-  textSize(10);
+  textSize(10); //<>//
   stroke(224);
   strokeWeight(1); //<>//
   
@@ -227,7 +227,7 @@ void drawYDataLabels() {
 float tabTop, tabBottom;
 float[] tabLeft, tabRight;
 float tabPad = 10;
-
+ //<>//
 void drawTitleTabs() {
   rectMode(CORNERS);  //<>//
   noStroke( ); 
@@ -299,7 +299,7 @@ void setColumn(int col) {
 // so we use this method
 void drawDataArea(int col) {  
   fill(#0000FF);
-  beginShape();
+  beginShape(); //<>//
  //<>//
   for (int i = 0; i < xNumber.length; i ++) {
     if (data.isValid(i,col)){
@@ -323,8 +323,7 @@ void rollover(int col) {
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
-      // if (dist(mouseX, mouseY, x, y) < 2) {
-      if (abs(mouseX - xTrans - x) < 3) {
+      if (abs(((mouseX - xTrans) / zoom) - x) < 3) {
         strokeWeight(10);
         point(x,y);
         fill(0);
