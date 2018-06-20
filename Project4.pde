@@ -29,7 +29,7 @@ float plotX1, plotY1;
 float plotX2, plotY2;
 PFont plotFont;
 float labelX, labelY;
-int toggleLine = 0;
+boolean toggleLinesAreOn = false;
 
 // vars for zooming
 float xTrans = 0;
@@ -59,17 +59,16 @@ void setup() {
   for(int index = 0; index < years.length; index++){
     if (prevYear == years[years.length - 1]) {
       count += 1;
-    } else {
-      if (years[index] == prevYear) {
+    } else if (years[index] == prevYear) {
         count += 1;
-      } else {
+    } else {
         numOfEachYear[newIndex] = count;
         newIndex += 1;
         count = 1;
         prevYear = years[index];
       }
     }
-  }
+ 
   numOfEachYear[newIndex + 1] = count;
   
   // This will tell us how many X axis points we will have
@@ -142,7 +141,6 @@ void draw() {
   drawXDataLabels();
   drawYDataLabels();
   rollover(currentColumn);
-  //drawDataBars(currentColumn);
    
   // update the data
   for (int row = 0; row < rowCount; row++) { 
@@ -196,8 +194,8 @@ void drawXDataLabels() {
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       text(years[i], x, plotY2 + 10);
       // only display gridlines when user tells us to
-      if (toggleLine == 1) {
-          line(x, plotY1, x, plotY2);
+      if (toggleLinesAreOn) {
+        line(x, plotY1, x, plotY2);
       }
       currentYear = years[i];
     }
@@ -217,7 +215,7 @@ void drawYDataLabels() {
       text("$" + floor(v), plotX1 - 10, y);
       strokeWeight(1);
       // only display the grid lines when the user tells us to
-      if (toggleLine == 1) {
+      if (toggleLinesAreOn) {
         line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
       }
     } 
@@ -243,6 +241,7 @@ void drawTitleTabs() {
   float runningX = 120;
   tabTop = 50 - textAscent() - 15; 
   tabBottom = 50;
+  
   for (int col = 0; col < columnCount; col++) {
     String title = data.getColumnName(col);
     tabLeft[col] = runningX;
@@ -272,10 +271,10 @@ void mousePressed() {
 // we decided to toggle grid lines by pressing the space bar
 void keyPressed() {
   if (key == ' ') {
-    if (toggleLine == 0) {
-      toggleLine = 1;
+    if (toggleLinesAreOn) {
+      toggleLinesAreOn = false;
     } else {
-      toggleLine = 0;
+      toggleLinesAreOn = true;
     }
   } else if (key == 'z') {
     // zoom back to nromal
@@ -298,7 +297,7 @@ void setColumn(int col) {
 // stock data is drawn with the area filled in
 // so we use this method
 void drawDataArea(int col) {  
-  fill(#0000FF);
+  fill(#55709b);
   beginShape();
  //<>//
   for (int i = 0; i < xNumber.length; i ++) {
