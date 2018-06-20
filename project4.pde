@@ -6,7 +6,7 @@
 //# Class:    CPSC 53000 Data Visualization #
 //# Semester: Summer I 2018                 #
 //# Project:  4                             #
-//# Date:     06/119/18                     #
+//# Date:     06/19/18                     #
 //###########################################
 
 //############ Global Variables #############
@@ -57,10 +57,10 @@ void setup() {
   int count = 0;
   int newIndex = 0;
   for(int index = 0; index < years.length; index++){
-    if(prevYear == years[years.length - 1]){
+    if (prevYear == years[years.length - 1]) {
       count += 1;
     } else {
-      if(years[index] == prevYear){
+      if (years[index] == prevYear) {
         count += 1;
       } else {
         numOfEachYear[newIndex] = count;
@@ -69,21 +69,20 @@ void setup() {
         prevYear = years[index];
       }
     }
-    
   }
   numOfEachYear[newIndex + 1] = count;
   
   // This will tell us how many X axis points we will have
   int totalPoints = 0;
-  for(int index = 0; index < numOfEachYear.length; index++){
-    if(numOfEachYear[index] != 0){
+  for (int index = 0; index < numOfEachYear.length; index++) {
+    if (numOfEachYear[index] != 0) {
       totalPoints = totalPoints + numOfEachYear[index];
     }
   }
   // This just creates an array of values 0 to the total number of points
   // This is so we can display all the points at the appropriate location
   xNumber = new int[totalPoints];
-  for(int i = 0; i < totalPoints; i++){
+  for (int i = 0; i < totalPoints; i++) {
     xNumber[i] = i;
   }
   
@@ -101,6 +100,7 @@ void setup() {
   plotFont = createFont("SansSerif",20);
   textFont(plotFont);
    
+
    // initial data loaded
    interpolators = new Integrator[rowCount];
    for ( int row= 0 ; row < rowCount; row++ ) {
@@ -110,34 +110,42 @@ void setup() {
    }
    smooth();
    
-   
+   frameRate(24); // Slowing the frame rate for a more aesthetically pleasing transition
+   surface.setTitle("Stock Prices"); // Setting window title
 }
 
 void draw() {  
-   background(224); // Offwhite background
+  background(224); // Offwhite background
    
-   // Draw the visualization window 
-   fill(255);
-   rectMode(CORNERS);
-   rect(plotX1,plotY1,plotX2,plotY2);
+  // Draw the visualization window 
+
+  fill(255);
+  rectMode(CORNERS);
+  
    
-   // this is for the zoom cababilities
-   translate(xTrans,yTrans);
-   scale(zoom);
+  // this is for the zoom cababilities
+  drawTitleTabs();
+  fill(255);
+  translate(xTrans, yTrans);
+  scale(zoom);
+  
+  rect(plotX1,plotY1,plotX2,plotY2);
    
-   // functions to draw everything
-   drawTitle(); 
-   drawAxisLabels();
-   drawTitleTabs();
-   drawDataArea(currentColumn);
-   fill(0);
-   drawXDataLabels();
-   drawYDataLabels();
-   rollover(currentColumn);
-   //drawDataBars(currentColumn);
+  // functions to draw everything
+  drawTitle();
+  drawGridlineBlurb();
+  drawZoomResetBlurb();
+  drawAxisLabels();
+  
+  drawDataArea(currentColumn);
+  fill(0);
+  drawXDataLabels();
+  drawYDataLabels();
+  rollover(currentColumn);
+  //drawDataBars(currentColumn);
    
-   // update the data
-   for (int row = 0; row < rowCount; row++) { 
+  // update the data
+  for (int row = 0; row < rowCount; row++) { 
      interpolators[row].update( );
   }
 }
@@ -147,10 +155,25 @@ void drawTitle() {
   textSize(20);
   textAlign(LEFT);
   String title = data.getColumnName(currentColumn);
-  text(title, plotX1, plotY1 - 10);
+  text(title, plotX1 + 10, plotY1 + 25);
 }
 
-void drawAxisLabels() { 
+void drawGridlineBlurb() {
+  fill(150);
+  textSize(12);
+  textAlign(LEFT);
+  text("- Grid can be toggled on/off by pressing the space bar.", plotX1 + 10, plotY1 + 42);
+}
+
+void drawZoomResetBlurb() {
+  fill(150);
+  textSize(12);
+  textAlign(LEFT);
+  text("- Position and zoom can be reset by pressing the 'z' key.", plotX1 + 10, plotY1 + 60);
+}
+
+void drawAxisLabels() {
+  fill(0);
   textSize(13);
   textLeading(15);
   textAlign(CENTER,CENTER);
@@ -168,7 +191,7 @@ void drawXDataLabels() {
   // Use thin, gray lines to draw the grid.
   stroke(224);
   strokeWeight(1);
-  for(int i = 0; i < xNumber.length; i++){
+  for (int i = 0; i < xNumber.length; i++) {
     if (years[i] != currentYear){
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       text(years[i], x, plotY2 + 10);
@@ -178,7 +201,6 @@ void drawXDataLabels() {
       }
       currentYear = years[i];
     }
-    
   }
 }
 
@@ -186,7 +208,7 @@ void drawYDataLabels() {
   fill(0);
   textSize(10);
   stroke(224);
-  strokeWeight(1);
+  strokeWeight(1); //<>//
   
   for (float v = dataMin; v <= dataMax; v += volumeInterval) {
     float y = map(v, dataMin, dataMax, plotY2, plotY1);
@@ -196,9 +218,8 @@ void drawYDataLabels() {
       strokeWeight(1);
       // only display the grid lines when the user tells us to
       if (toggleLine == 1) {
-          line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
+        line(plotX1 -4, y, plotX2, y); // Draw major tick mark  
       }
-       
     } 
   }
 }
@@ -208,7 +229,7 @@ float[] tabLeft, tabRight;
 float tabPad = 10;
 
 void drawTitleTabs() {
-  rectMode(CORNERS); 
+  rectMode(CORNERS);  //<>//
   noStroke( ); 
   textSize(20); 
   textAlign(LEFT);
@@ -219,9 +240,9 @@ void drawTitleTabs() {
     tabLeft = new float[columnCount];
     tabRight = new float[columnCount];
   }
-  float runningX = plotX1;
-  tabTop = plotY1 - textAscent() - 15; 
-  tabBottom = plotY1;
+  float runningX = 120;
+  tabTop = 50 - textAscent() - 15; 
+  tabBottom = 50;
   for (int col = 0; col < columnCount; col++) {
     String title = data.getColumnName(col);
     tabLeft[col] = runningX;
@@ -232,17 +253,12 @@ void drawTitleTabs() {
     rect(tabLeft[col], tabTop, tabRight[col], tabBottom);
     // If the current tab, use black for the text; otherwise use dark gray.
     fill(col == currentColumn ? 0 : 64);
-    text(title, runningX + tabPad, plotY1 - 10);
+    text(title, runningX + tabPad, 50 - 10);
     runningX = tabRight[col];
   }
 }
 
 void mousePressed() {
-  // zoom back to nromal
-  xTrans = 0;
-  yTrans = 0;
-  zoom = 1;
-  
   // select the graph
   if (mouseY > tabTop && mouseY < tabBottom) {
     for (int col = 0; col < columnCount; col++) {
@@ -254,21 +270,29 @@ void mousePressed() {
 }
 
 // we decided to toggle grid lines by pressing the space bar
-void keyPressed(){
-  if (key == ' '){
-    if (toggleLine == 0) toggleLine = 1;
-    else toggleLine = 0;
+void keyPressed() {
+  if (key == ' ') {
+    if (toggleLine == 0) {
+      toggleLine = 1;
+    } else {
+      toggleLine = 0;
+    }
+  } else if (key == 'z') {
+    // zoom back to nromal
+    xTrans = 0;
+    yTrans = 0;
+    zoom = 1;
   }
 }
 
 void setColumn(int col) {  
   if (col != currentColumn) {
-     currentColumn = col;
-   }
+    currentColumn = col;
+  }
    
   for (int row = 0; row < rowCount; row++) {
-      interpolators[row].target(data.getFloat(row, col));
-   }   
+    interpolators[row].target(data.getFloat(row, col));
+  }   
 }
 
 // stock data is drawn with the area filled in
@@ -276,9 +300,9 @@ void setColumn(int col) {
 void drawDataArea(int col) {  
   fill(#0000FF);
   beginShape();
-  
-  for(int i = 0; i < xNumber.length; i ++){
-    if(data.isValid(i,col)){
+ //<>//
+  for (int i = 0; i < xNumber.length; i ++) {
+    if (data.isValid(i,col)){
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
@@ -292,37 +316,21 @@ void drawDataArea(int col) {
   endShape(CLOSE);
 }
 
-/*
-float barWidth = 4;
-
-void drawDataBars(int col) {
-  noStroke( ); //<>//
-  rectMode(CORNERS);
-  for (int row = 0; row < rowCount; row++) {
-    if (data.isValid(row, col)) {
-      float value = interpolators[row].value;
-      float x = map(row, 0, rowCount - 1, plotX1, plotX2); 
-      float y = map(value, dataMin, dataMax, plotY2, plotY1); 
-      rect(x-barWidth/2, y, x+barWidth/2, plotY2);
-    }
-  }
-}
-*/
-
 // display the data in rollover (doesn't work as nicely when zoomed in)
-void rollover(int col){
-   for(int i = 0; i < xNumber.length; i ++){
-    if(data.isValid(i,col)){
+void rollover(int col) {
+  for (int i = 0; i < xNumber.length; i ++) {
+    if (data.isValid(i,col)) {
       float value = interpolators[i].value;
       float x = map(xNumber[i], xNumber[0], xNumber[xNumber.length - 1], plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
-      if(dist(mouseX, mouseY, x, y) < 2){
+      // if (dist(mouseX, mouseY, x, y) < 2) {
+      if (abs(mouseX - xTrans - x) < 3) {
         strokeWeight(10);
         point(x,y);
         fill(0);
         textSize(10);
         textAlign(CENTER);
-        text( "$" + nf(value, 0, 2) + " (" + data.getMonth(i) + "/1)", x, y-8);
+        text(String.format("$%s (%s/%s)", nf(value, 0, 2), data.getMonth(i), data.getYear(i)), x, y - 8);
       }
     }
   }
@@ -330,11 +338,16 @@ void rollover(int col){
 
 // get the zoom data
 void mouseWheel( MouseEvent event) {
-  
-  xTrans = xTrans-event.getCount()*(mouseX)/100;
-  
-  yTrans = yTrans-event.getCount()*(mouseY)/100;
-  zoom += event.getAmount() / 100;
-  
-  
+  if (zoom + (event.getCount() / 25.0) > 1) {
+    zoom += event.getCount() / 25.0;
+    xTrans -= event.getCount() * mouseX / 25.0;
+    yTrans -= event.getCount() * mouseY / 25.0;
+  }
+}
+
+void mouseDragged() {
+  float xDiff = mouseX - pmouseX;
+  float yDiff = mouseY - pmouseY;
+  xTrans = xTrans + xDiff;
+  yTrans = yTrans + yDiff;
 }
